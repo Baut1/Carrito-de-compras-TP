@@ -16,7 +16,7 @@
   <ul class="list-group">
     <% roles.forEach(role => { %>
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span><%= role.name %> (<%= role.id %>)</span>
+        <span><%= role.name %> (id: <%= role.id %>)</span>
         <div>
           <a href="/roles/<%= role.id %>/edit" class="btn btn-sm btn-warning me-2">Editar</a>
           <form action="/roles/<%= role.id %>/delete" method="POST" style="display:inline;">
