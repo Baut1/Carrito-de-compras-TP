@@ -2,9 +2,9 @@ const { registerUser, loginUser } = require('../services/auth.service');
 const { generarToken } = require('../utils/jwt');
 
 function register (req, res) {
-  const { email, password } = req.body;
+  const { email, password, role_id } = req.body;
   try {
-    registerUser(email, password);
+    registerUser(email, password, role_id);
     res.status(201).json({ message: 'Usuario registrado correctamente' });
   } catch (err) {    
     res.status(400).json({ error: err.message });

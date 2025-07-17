@@ -21,6 +21,14 @@ db.exec(`
   );
 `);
 
+// Insertar roles por defecto si la tabla está vacía
+const rolesCount = db.prepare('SELECT COUNT(*) AS total FROM roles').get().total;
+if (rolesCount === 0) {
+  db.prepare('INSERT INTO roles (name) VALUES (?)').run('admin');
+  db.prepare('INSERT INTO roles (name) VALUES (?)').run('cliente');
+}
+
+// Tabla de permisos
 db.prepare(`
   CREATE TABLE IF NOT EXISTS permisos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,6 +36,13 @@ db.prepare(`
   )
 `).run()
 
+// Insertar permiso por defecto si la tabla está vacía
+const permisosCount = db.prepare('SELECT COUNT(*) AS total FROM permisos').get().total;
+if (permisosCount === 0) {
+  db.prepare('INSERT INTO permisos (nombre) VALUES (?)').run('agregar permisos');
+}
+
+// Crear tabla intermedia rol_permiso si no existe
 db.prepare(`
   CREATE TABLE IF NOT EXISTS rol_permiso (
     rol_id INTEGER,
@@ -55,15 +70,10 @@ db.prepare(`
 
 const cantidad = db.prepare('SELECT COUNT(*) AS total FROM productos').get().total;
 if (cantidad === 0) {
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Café en grano', 1500)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Taza térmica', 1200)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Filtro de papel', 300)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Leche', 900)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Galletas', 500)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Cafetera italiana', 5000)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Termo de acero', 3500)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Chocolate para taza', 1100)`).run();
-  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Azúcar', 400)`).run();
+  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Café en grano', 27000)`).run();
+  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Filtro de papel', 4200)`).run();
+  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Leche', 1500)`).run();
+  db.prepare(`INSERT INTO productos (nombre, precio) VALUES ('Galletas', 800)`).run();
 }
 
 // Crear tabla carrito si no existe

@@ -2,7 +2,6 @@ const logsModel = require('../models/logs.model');
 
 const logsMiddleware = (req, res, next) => {
   const user = req.user || {};
-  const start = Date.now();
 
   res.on('finish', () => {
     logsModel.registrar({
@@ -10,7 +9,7 @@ const logsMiddleware = (req, res, next) => {
       endpoint: req.originalUrl,
       metodo: req.method,
       estado: res.statusCode,
-      mensaje: `${req.method} ${req.originalUrl} → ${res.statusCode} (${Date.now() - start}ms)`
+      mensaje: `Peticion ${req.method} hacia ${req.originalUrl} con status: ${res.statusCode}`
     });
   });
 
