@@ -143,7 +143,7 @@ Devuelve:
     ```
 3. Iniciar el servidor:
     ```json
-    node app.js
+    npm start
     ```
 
 ## ¡Importante!
