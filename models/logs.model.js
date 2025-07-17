@@ -16,7 +16,12 @@ function getAll () {
   `).all();
 };
 
+function clearAll () {
+  db.prepare('DELETE FROM logs').run();
+};
+
 module.exports = {
     registrar,
-    getAll
+    getAll,
+    clearAll
 };

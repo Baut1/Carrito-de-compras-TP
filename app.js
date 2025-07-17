@@ -10,6 +10,7 @@ const carritoRoutes = require('./routes/carrito.routes');
 const compraRoutes = require('./routes/compra.routes');
 const logsRoutes = require('./routes/logs.routes');
 const createError = require('http-errors');
+const auth = require('./middlewares/auth.middleware');
 const logsMiddleware = require('./middlewares/logs.middleware');
 require('dotenv').config();
 
@@ -26,15 +27,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Configuracion de rutas
-app.use(logsMiddleware);
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/permisos', permisoRoutes)
 app.use('/auth', authRoutes);
 app.use('/productos', productosRoutes);
-app.use('/carrito', carritoRoutes);
-app.use('/compra', compraRoutes);
-app.use('/logs', logsRoutes);
+app.use('/carrito', auth, logsMiddleware, carritoRoutes);
+app.use('/compra', auth, logsMiddleware, compraRoutes);
+app.use('/logs', auth, logsMiddleware, logsRoutes);
 
 // Configuracion de redireccion (por defecto)
 app.get('/', (req, res) => {
