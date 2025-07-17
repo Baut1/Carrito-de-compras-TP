@@ -1,31 +1,160 @@
-## 📌 Permisos creados
+# Carrito de compras
 
-- `editar_usuarios`
-- `eliminar_usuarios`
-- `crear_usuarios`
+Proyecto backend para la gestión de usuarios, roles, permisos y operaciones de carrito de compras.  
+Desarrollado con Node.js, Express y SQLite.
+
+## Funcionalidades principales
+
+### Usuarios y roles
+- Alta, baja y modificación de usuarios (`/users`)
+- Asignación de roles a cada usuario
+- Vista de los permisos heredados desde el rol (`/users/:id`)
+
+### Roles y permisos
+- ABM de roles (`/roles`)
+- ABM de permisos (`/permisos`)
+- Asignación de permisos a roles desde `/roles/:id/edit`
+- Visualización de permisos asignados a un rol
+
+### Sistema de autenticación
+- Registro con email, contraseña y `role_id`
+- Login con persistencia de sesión usando JWT
+- Protección de rutas según si hay sesión válida
+- Validación de rol para acceso a ciertas rutas
+
+### Productos (público)
+- `GET /api/productos`: devuelve todos los productos disponibles
+- La base de datos ya incluye productos de ejemplo, también se pueden agregar con una petición `POST`
+
+### Carrito de compras
+Rutas autenticadas:
+- `GET /api/carrito`: muestra el carrito del usuario logueado
+- `POST /api/carrito`: agrega un producto al carrito
+- `DELETE /api/carrito/:id`: elimina un producto del carrito
+- `POST /api/compra`: finaliza la compra y vacía el carrito
+
+### Logs
+- Todas las peticiones autenticadas quedan registradas
+- La tabla `logs` guarda: timestamp, user_id, endpoint, método, estado, mensaje
+- `GET /api/logs`: solo accesible por admin
+- `DELETE /api/logs`: elimina todos los logs (requiere ser admin)
 
 ---
 
-## 🔐 Asignación de permisos a roles
+## Cómo probar (ejemplos)
 
-Desde la vista de edición de un rol (`/roles/:id/edit`), se pueden **asignar o quitar permisos** usando checkboxes. Estos datos se guardan en la tabla intermedia `rol_permiso`.
+### Registro de usuario
+```json
+POST /auth/register
+{
+  "email": "admin@admin.com",
+  "password": "1234",
+}
+```
+### Login
+```json
+POST /auth/login
+{
+  "email": "admin@admin.com",
+  "password": "1234"
+}
+```
+Devuelve un token. Usar ese token en los headers como:
 
----
+Authorization: Bearer (token)
 
-## 👤 Visualización de permisos por usuario
+### Carrito (requiere estar autenticado)
+```json
+GET /carrito
+{
+  "user_id": 2,
+}
+```
+Devuelve:
+```json
+[
+  {
+    "id": 3,
+    "nombre": "Filtro de papel",
+    "precio": 4200,
+    "cantidad": 1
+  },
+  {
+    "id": 4,
+    "nombre": "Leche",
+    "precio": 1500,
+    "cantidad": 2
+  }
+]
+```
+```json
+POST /carrito
+{
+  "user_id": 2,
+  "producto_id": 1,
+  "cantidad": 3
+}
+```
+### Compra (requiere estar autenticado)
+```json
+POST /compra
+{
+  "user_id": 2,
+}
+```
+Devuelve:
+```json
+{
+  "message": "Compra realizada con éxito",
+  "total": 93600
+}
+```
 
-Cuando se accede a la vista de un usuario (`/users/:id`), se muestra una lista con los **permisos que tiene el rol asignado a ese usuario**.
+### Logs (requiere estar autenticado y tener el rol "admin")
+```json
+GET /logs
+```
+Devuelve:
+```json
+...
+{
+    "id": 8,
+    "timestamp": "2025-07-17 18:46:56",
+    "user_id": 1,
+    "endpoint": "/carrito",
+    "metodo": "GET",
+    "estado": 200,
+    "mensaje": "Peticion GET hacia /carrito con status: 200",
+    "email": "admin@admin.com"
+},
+...
+```
 
----
+## Setup del proyecto
 
-## 📸 Capturas requeridas
+1. Clonar el repositorio:
+    ```json
+    git clone https://github.com/Baut1/Carrito-de-compras-TP.git
+    cd Carrito-de-compras-TP
+    ```
+2. Instalar dependencias:
+    ```json
+    npm install
+    ```
+3. Iniciar el servidor:
+    ```json
+    node app.js
+    ```
 
-![Screenshot_1](https://github.com/user-attachments/assets/a05bda64-1088-4995-884c-8acf42e2215b)
+## ¡Importante!
 
-![Screenshot_2](https://github.com/user-attachments/assets/e50e1da9-19c1-47cf-b568-dd3349b6b2e8)
+Crear un archivo .env en la raíz principal del proyecto, con alguna clave `JWT_SECRET` para la enrciptación de las contraseñas.
 
-![Screenshot_3](https://github.com/user-attachments/assets/15cb20a8-1b7a-4e0b-8cc1-4fbb7bf33324)
-
-![Screenshot_4](https://github.com/user-attachments/assets/8dad1fd8-91f6-4379-b1b3-fa7716c9583a)
-
-![Screenshot_5](https://github.com/user-attachments/assets/f3e9b047-d257-4096-a0a2-2f722445e556)
+Por ej:
+```json
+JWT_SECRET=clave
+```
+o idealmente algo menos obvio como:
+```json
+JWT_SECRET=aa3a3e47bae4f0c6be87ac2abb4796a094240cc74681e138868d13489892ddd3
+json
